@@ -1,3 +1,8 @@
+---
+layout: default
+title: VICL
+---
+
 # DATA8018-Final_report-VICL
 
 # Visual In-Context Learning: From Pixel Prompts to Bayesian Task Inference
