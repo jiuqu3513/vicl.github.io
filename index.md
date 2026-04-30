@@ -40,7 +40,7 @@ Large language models challenged that habit of thought. GPT-3 showed that, given
 
 Visual In-Context Learning (VICL) asks the analogous question for vision:
 
-> Can we condition a large generative vision model on a few demonstration pairs $(x_1, y_1), \dots, (x_k, y_k)$ and a query $x^*$, and have it produce $y^*$ for a new task - segmentation, matting, sketch-to-photo, dehazing, identity-preserving editing - without task-specific tuning?
+> Can we condition a large generative vision model on a few demonstration pairs $(x_1, y_1), \dots, (x_k, y_k)$ and a query $x^\*$ , and have it produce $y^\*$ for a new task - segmentation, matting, sketch-to-photo, dehazing, identity-preserving editing - without task-specific tuning?
 
 Recent systems give a partial yes, with important caveats. The useful way to read that progress is in two halves: a theoretical lens for why context can specify a visual task, and an application timeline showing how researchers have built that idea into working systems.
 
@@ -99,16 +99,7 @@ That last row deserves emphasis, with caution: it is a prediction of this modell
 
 A useful mental picture: every demonstration pair you append to the prompt is one Bayesian update. Tasks consistent with all the pairs retain mass; tasks inconsistent with any pair lose mass.
 
-```mermaid
-flowchart LR
-    P0["p(theta)<br/>broad prior over<br/>all pre-training tasks"]
-    P1["p(theta | x1, y1)<br/>many tasks<br/>still possible"]
-    P2["p(theta | x1:2, y1:2)<br/>posterior narrows"]
-    P3["p(theta | C)<br/>mass concentrated<br/>near the intended task"]
-    P0 -->|observe pair 1| P1
-    P1 -->|observe pair 2| P2
-    P2 -->|observe pair 3...| P3
-```
+![Bayesian update](1.png)
 
 This is also why context selection is so consequential: the information a pair contributes to disambiguating $\theta$ varies wildly across pairs. Two examples of "photo of a cat with mask" might collapse onto almost the same posterior, whereas one example of a cat and one of a dog with masks can pin down "binary segmentation" more sharply.
 
@@ -137,12 +128,8 @@ A more recent theoretical thread, represented by Kiruluta's 2026 preprint _Filte
 - Each demonstration acts like an observation; with linear-Gaussian assumptions, Bayes' rule gives the standard Kalman update.
 - The covariance $\Sigma_t$ may shrink as informative observations arrive, giving a formal version of "the model is becoming more certain about the task."
 
-```mermaid
-flowchart LR
-    S0["Sigma0: large<br/>task uncertain"] -->|pair 1| S1["Sigma1 < Sigma0"]
-    S1 -->|pair 2| S2["Sigma2 < Sigma1"]
-    S2 -->|pair 3| S3["Sigma3: smaller<br/>task more locked in"]
-```
+![covariance](2.png)
+
 
 Why this matters: the Kalman view suggests an optimisation-inference duality. It sits beside another common explanatory tradition in which ICL resembles fitting a simple predictor on the in-context examples; filtering views show that, under restrictive assumptions, least-squares-style updates arise as a limiting case of Bayesian state estimation. That does not make all ICL literally Kalman filtering, but it gives a useful bridge between two explanatory traditions.
 
@@ -163,21 +150,8 @@ With this scaffolding in mind, we now turn to how the field has actually built V
 
 One way to read the application papers is to ask which part of the Bayesian story they improve: the prior over tasks, the context format, the image likelihood, or the reliability signal.
 
-```mermaid
-flowchart TD
-    T["Latent task inference<br/>over theta"] --> P["Broader prior p(theta)<br/>task diversity"]
-    T --> C["Sharper posterior p(theta given C)<br/>better examples and context layout"]
-    T --> L["Stronger likelihood p(y* given x*, theta)<br/>better image generator"]
-    T --> U["Uncertainty over theta<br/>covariance or entropy proxies"]
-    T --> A["Adaptation under shift<br/>test-time updates"]
-    P --> PICO["PICO<br/>diverse personalised task data"]
-    C --> Painter["Visual Prompting / Painter / SegGPT<br/>grid and cloze prompts"]
-    C --> Select["What Makes Good Examples<br/>context selection"]
-    L --> Diff["Prompt Diffusion / IconMatting / SD-VICL<br/>diffusion and attention priors"]
-    C --> Multi["IMProv / CoDi-2 / OmniGen / VisualCloze<br/>interleaved multimodal context"]
-    U --> OpenU["Abstention signals<br/>open reliability question"]
-    A --> VICT["VICT<br/>test-time visual in-context tuning"]
-```
+![Timeline_Map](3.png)
+
 
 ---
 
@@ -239,14 +213,8 @@ Painter (CVPR 2023) is the canonical example. Arrange a demonstration pair $(x_1
 | Top row | Demonstration input $x_1$ | Demonstration output $y_1$ |
 | Bottom row | Query input $x^*$ | Masked output slot, completed as $y^*$ |
 
-```mermaid
-flowchart LR
-    X1["x1<br/>example input"] --> Y1["y1<br/>example output"]
-    XQ["x*<br/>query input"] --> YQ["masked slot<br/>model predicts y*"]
-    R["visual relation<br/>defines the task"]
-    Y1 -.-> R
-    R -.-> YQ
-```
+![example](4.png)
+
 
 The task - depth estimation, semantic segmentation, denoising, low-light enhancement - is communicated by the visual relationship between the top two cells. No text prompt, task-id embedding, or task-specific head is required at inference time.
 
