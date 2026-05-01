@@ -104,7 +104,7 @@ For deployment, example selection is not a minor prompt detail; it is part of th
 Recent work by Arora et al. (2025) formalises relationships between context length, model size, and task performance through Bayesian scaling laws. Two key quantities are:
 
 - Task prior $p(\theta)$: how likely the model thinks task $\theta$ is before seeing any examples, as shaped by pre-training data composition and post-training.
-- Learning efficiency: how quickly $p(\theta \mid C)$ concentrates on the intended task as $|C|$ grows.
+- Learning efficiency: how quickly $p(\theta \mid C)$ concentrates on the intended task as $\vert C \vert$ grows.
 
 One prediction of this framework is many-shot re-emergence. If a model has been aligned away from some task $\theta_{\text{bad}}$, one can model that alignment as suppressing the prior $p(\theta_{\text{bad}})$. A sufficiently consistent and sufficiently long context may still move posterior mass back toward $\theta_{\text{bad}}$, because
 
