@@ -1,4 +1,25 @@
 title: VICL
+description: Visual In-Context Learning Survey
 remote_theme: just-the-docs/just-the-docs
 plugins:
   - jekyll-remote-theme
+
+# 左侧导航配置
+nav_external_links:
+  - title: GitHub
+    url: https://github.com/jiuqu3513/vicl
+
+# 页面排序和导航
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: default
+
+# 或者手动定义导航结构
+just_the_docs:
+  collections:
+    pages:
+      name: Pages
+      nav_fold: false
